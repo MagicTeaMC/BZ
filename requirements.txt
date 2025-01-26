@@ -1,0 +1,5 @@
+hikari
+ddginternal
+python-dotenv
+groq
+definitely-typed
