@@ -20,14 +20,23 @@ impl EventHandler for Handler {
         if msg.mentions_me(&ctx.http).await.unwrap_or(false) {
             let content = msg.content.clone();
 
+            // Start typing indicator to show the bot is processing
+            let typing = msg.channel_id.start_typing(&ctx.http);
+
             // Use askllama to get a response
             match askllama::ask(&content).await {
                 Ok(response) => {
+                    // Stop typing indicator
+                    drop(typing);
+
                     if let Err(e) = msg.reply(&ctx.http, response).await {
                         println!("Error sending message: {:?}", e);
                     }
                 },
                 Err(e) => {
+                    // Stop typing indicator
+                    drop(typing);
+
                     println!("Error getting response: {:?}", e);
                     // Clone the error message before the await to avoid Send issue
                     let error_msg = format!("{:?}", e);
